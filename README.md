@@ -18,14 +18,25 @@ python -m http.server 8000 --directory dist
 docker compose up -d
 ```
 
-เปิดเว็บที่ `http://localhost:8200/poi/` และหยุด container ด้วย `docker compose down`
+เปิดเว็บที่ `http://localhost:8200/poi/` และหยุด container ด้วย `docker compose down` คอนเทนเนอร์จะ bind ที่ `127.0.0.1:8200` เพื่อให้ Nginx บนเครื่องเดียวกัน proxy เข้ามาได้
 
-## Deploy บน Static Server
+## Deploy บน geodev.fun
 
-- หาก upload ทั้ง repository ไว้ในโฟลเดอร์ `poi` ให้เปิด `https://geodev.fun/poi/`; `index.html` ที่ root จะพาไปยัง `dist/` โดยอัตโนมัติ
-- หาก server ตั้ง document root ไปที่ `dist/` โดยตรง ให้เปิด `https://geodev.fun/poi/` หลังวางไฟล์ทั้งหมดจาก `dist/` ไว้ในโฟลเดอร์ `poi`
-- ต้อง upload เนื้อหาใน `dist/` ไปยัง server ด้วย การ push ขึ้น GitHub อย่างเดียวไม่ได้ deploy ไฟล์ไปที่ `geodev.fun`
-- ไม่ต้อง upload `dist/config.js`; หน้าส่วนอื่นยังทำงานได้ แต่หน้าเปรียบเทียบ Google Maps ต้องสร้าง config บน server พร้อม API key ที่จำกัด referrer ให้เหมาะสม
+บน Ubuntu server ที่ Nginx และ Docker ติดตั้งอยู่ ให้ clone หรือ pull repository แล้วรัน:
+
+```bash
+docker compose up -d
+```
+
+เพิ่มเนื้อหาใน `deploy/geodev-poi-location.conf` ภายใน HTTPS `server` block ของ `geodev.fun` แล้วตรวจและ reload Nginx:
+
+```bash
+sudo nginx -t && sudo systemctl reload nginx
+```
+
+ตัวอย่างนี้ proxy `/poi/` ไปยัง container ที่ `127.0.0.1:8200` โดยคง path ไว้ การ push ขึ้น GitHub อย่างเดียวไม่ deploy ไฟล์หรือเริ่ม container บน server
+
+ไม่ต้อง commit หรือ upload `dist/config.js`; หากต้องการ Google Maps บน server ให้สร้างไฟล์นี้บน server และจำกัด API key ด้วย HTTP referrer ของเว็บจริง
 
 ## ข้อมูลที่เชื่อมแล้ว
 
