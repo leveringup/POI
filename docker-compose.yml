@@ -6,5 +6,5 @@ services:
     ports:
       - "8200:8000"
     volumes:
-      - ./dist:/site:ro
+      - ./dist:/site/poi:ro
     restart: unless-stopped

@@ -12,6 +12,14 @@ python -m http.server 8000 --directory dist
 
 จากนั้นเปิด `http://localhost:8000`
 
+## เปิดด้วย Docker Compose
+
+```powershell
+docker compose up -d
+```
+
+เปิดเว็บที่ `http://localhost:8200/poi/` และหยุด container ด้วย `docker compose down`
+
 ## Deploy บน Static Server
 
 - หาก upload ทั้ง repository ไว้ในโฟลเดอร์ `poi` ให้เปิด `https://geodev.fun/poi/`; `index.html` ที่ root จะพาไปยัง `dist/` โดยอัตโนมัติ
