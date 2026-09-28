@@ -1,0 +1,10 @@
+services:
+  web:
+    image: python:3.12-alpine
+    container_name: poi_ai
+    command: python -m http.server 8000 --directory /site
+    ports:
+      - "8200:8000"
+    volumes:
+      - ./dist:/site:ro
+    restart: unless-stopped

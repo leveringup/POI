@@ -1,0 +1,30 @@
+# nimman-poi-research-map
+
+เว็บแผนที่ localhost สำหรับงานวิจัย POI จาก Street View
+
+## เปิดเว็บ
+
+เปิด Terminal ในโฟลเดอร์นี้ แล้วรัน:
+
+```powershell
+python -m http.server 8000 --directory dist
+```
+
+จากนั้นเปิด `http://localhost:8000`
+
+## ข้อมูลที่เชื่อมแล้ว
+
+- `dist/data/sv_poi_shifted.geojson` — POI Street View ทั้งเทศบาลหลังเลื่อนตำแหน่ง
+- `dist/data/sv_poi_clip_10m.geojson` — POI Street View ภายใน buffer 10 เมตร
+- `dist/data/osm_poi_clip_10m.geojson` — OSM ภายใน buffer 10 เมตร
+- `dist/data/gg_poi_clip_10m.geojson` — Google Places ภายใน buffer 10 เมตร
+- `dist/data/buffer_10m.geojson` — ขอบเขต buffer 10 เมตร
+- `dist/data/road_nimman.geojson` — แนวถนนนิมมาน
+
+## ก่อนใช้หน้าการเปรียบเทียบ Google
+
+ใส่ Google Maps JavaScript API key ที่จำกัดการใช้งานเฉพาะ `http://localhost:*` ใน `dist/config.js` และเปิด Maps JavaScript API ใน Google Cloud
+
+## รูปป้ายใน Popup
+
+เพิ่มฟิลด์ `crop_urls` ลงใน `sv_poi_shifted.geojson` เป็นรายการ URL สัมพัทธ์ เช่น `assets/crops/258_left_01.jpg` แล้ววางรูปไว้ใน `dist/assets/crops/`

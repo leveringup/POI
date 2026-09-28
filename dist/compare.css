@@ -1,0 +1,36 @@
+.source-toggles {
+  display: grid;
+  gap: 7px;
+  margin: 15px 0;
+}
+
+.source-toggles label {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.source-toggles input {
+  width: auto;
+  margin: 0 6px 0 0;
+  vertical-align: middle;
+}
+
+.poi-list {
+  max-height: 180px;
+  overflow: auto;
+  border-top: 1px solid var(--line);
+  padding-top: 9px;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.poi-row {
+  padding: 7px 0;
+  border-bottom: 1px solid #edf1ee;
+}
+
+.poi-row b { display: block; font-size: 12px; }
+.poi-row span, .poi-list-note { color: var(--muted); }
+.poi-list-note { font-size: 11px; padding-top: 8px; }
