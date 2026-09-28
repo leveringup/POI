@@ -12,6 +12,13 @@ python -m http.server 8000 --directory dist
 
 จากนั้นเปิด `http://localhost:8000`
 
+## Deploy บน Static Server
+
+- หาก upload ทั้ง repository ไว้ในโฟลเดอร์ `poi` ให้เปิด `https://geodev.fun/poi/`; `index.html` ที่ root จะพาไปยัง `dist/` โดยอัตโนมัติ
+- หาก server ตั้ง document root ไปที่ `dist/` โดยตรง ให้เปิด `https://geodev.fun/poi/` หลังวางไฟล์ทั้งหมดจาก `dist/` ไว้ในโฟลเดอร์ `poi`
+- ต้อง upload เนื้อหาใน `dist/` ไปยัง server ด้วย การ push ขึ้น GitHub อย่างเดียวไม่ได้ deploy ไฟล์ไปที่ `geodev.fun`
+- ไม่ต้อง upload `dist/config.js`; หน้าส่วนอื่นยังทำงานได้ แต่หน้าเปรียบเทียบ Google Maps ต้องสร้าง config บน server พร้อม API key ที่จำกัด referrer ให้เหมาะสม
+
 ## ข้อมูลที่เชื่อมแล้ว
 
 - `dist/data/sv_poi_shifted.geojson` — POI Street View ทั้งเทศบาลหลังเลื่อนตำแหน่ง
