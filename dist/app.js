@@ -165,9 +165,10 @@ async function initStreetView() {
   addMapOverlay(svMap, L.geoJSON(municipality, { style: { color: '#263f37', weight: 2, fillOpacity: 0 } }), 'ขอบเขตเทศบาล');
   const poiLayerGroup = L.layerGroup();
   addMapOverlay(svMap, poiLayerGroup, 'POI · Street View');
-  const categories = [...new Set(data.features.map(f => f.properties.category_std_th || f.properties.catmain_th).filter(Boolean))].sort();
   const select = document.getElementById('svCategory');
-  categories.forEach(category => select.add(new Option(category, category)));
+  Object.entries(CATEGORY_INFO)
+    .sort(([, left], [, right]) => left.th.localeCompare(right.th, 'th'))
+    .forEach(([key, info]) => select.add(new Option(info.th, key)));
   let layer;
   function draw() {
     if (layer) poiLayerGroup.removeLayer(layer);
@@ -176,8 +177,8 @@ async function initStreetView() {
     const filtered = data.features.filter(feature => {
       const p = feature.properties;
       const name = String(p.poi_name || p.poi_names || '').toLowerCase();
-      const main = p.category_std_th || p.catmain_th || '';
-      return visibleCategories.has(categoryKey(feature)) && (!query || name.includes(query)) && (!category || main.includes(category));
+      const mainCategory = categoryKey(feature);
+      return visibleCategories.has(mainCategory) && (!query || name.includes(query)) && (!category || mainCategory === category);
     });
     layer = addGeoJson(poiLayerGroup, { type: 'FeatureCollection', features: filtered });
     document.getElementById('svCount').textContent = `แสดง ${filtered.length.toLocaleString()} จุด จาก ${data.features.length.toLocaleString()} จุด`;
