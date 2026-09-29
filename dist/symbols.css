@@ -4,9 +4,17 @@
 }
 
 .poi-symbol {
-  width: 24px;
-  height: 24px;
   display: block;
+}
+
+.legend .sv {
+  background: #2563eb;
+}
+
+.poi-marker .poi-symbol {
+  width: 30px;
+  height: 39px;
+  filter: drop-shadow(0 1px 2px rgba(18, 43, 32, .38));
 }
 
 .category-legend {
@@ -35,9 +43,33 @@
   color: var(--muted);
 }
 
+.map-sidebar .symbol-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.map-sidebar .symbol-legend-item input {
+  flex: 0 0 14px;
+  width: 14px;
+  height: 14px;
+  margin: 0;
+  padding: 0;
+  accent-color: #2563eb;
+}
+
+.symbol-legend-marker {
+  display: flex;
+  flex: 0 0 18px;
+}
+
 .symbol-legend-item svg {
   width: 18px;
-  height: 18px;
+  height: 23px;
   flex: 0 0 18px;
 }
 

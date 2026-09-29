@@ -1,6 +1,6 @@
 const DATA = {
   svAll: 'data/sv_poi_shifted.geojson?v=20260925-crops',
-  svNimman: 'data/sv_poi_clip_10m.geojson',
+  svNimman: 'data/sv_poi_clip_10m.geojson?v=20260929-category-standard',
   osmNimman: 'data/osm_poi_clip_10m.geojson',
   ggNimman: 'data/gg_poi_clip_10m.geojson',
   buffer: 'data/buffer_10m.geojson',
@@ -9,21 +9,35 @@ const DATA = {
   kernelDensity: 'data/kernel_density_sv_poi_10m.png'
 };
 
-const COLORS = { sv: '#176b4e', osm: '#dc7928', gg: '#7856b8' };
+const COLORS = { sv: '#2563eb', osm: '#dc7928', gg: '#7856b8' };
+const SOURCE_LABELS = { sv: 'Street View', osm: 'OpenStreetMap', gg: 'Google Places' };
 const CATEGORY_INFO = {
-  food_beverage: { th: 'อาหารและเครื่องดื่ม', shape: 'circle' },
-  retail_commerce: { th: 'การค้าปลีกและร้านค้า', shape: 'square' },
-  personal_service_repair: { th: 'บริการส่วนบุคคลและงานซ่อม', shape: 'diamond' },
-  health: { th: 'สุขภาพและการแพทย์', shape: 'cross' },
-  finance_insurance: { th: 'การเงินและประกันภัย', shape: 'hexagon' },
-  education_religion: { th: 'การศึกษาและศาสนา', shape: 'triangle' },
-  office_professional: { th: 'สำนักงานและบริการวิชาชีพ', shape: 'rounded' },
-  tourism_culture: { th: 'ที่พัก การท่องเที่ยว และวัฒนธรรม', shape: 'star' },
-  sport_recreation: { th: 'กีฬาและนันทนาการ', shape: 'pentagon' },
-  other: { th: 'อื่น ๆ', shape: 'smallcircle' }
+  food_beverage: { th: 'อาหารและเครื่องดื่ม' },
+  retail_commerce: { th: 'การค้าปลีกและร้านค้า' },
+  personal_service_repair: { th: 'บริการส่วนบุคคลและงานซ่อม' },
+  health: { th: 'สุขภาพและการแพทย์' },
+  finance_insurance: { th: 'การเงินและประกันภัย' },
+  education_religion: { th: 'การศึกษาและศาสนา' },
+  office_professional: { th: 'สำนักงานและบริการวิชาชีพ' },
+  tourism_culture: { th: 'ที่พัก การท่องเที่ยว และวัฒนธรรม' },
+  sport_recreation: { th: 'กีฬาและนันทนาการ' },
+  other: { th: 'อื่น ๆ' }
+};
+const CATEGORY_COLORS = {
+  food_beverage: '#c96c1b',
+  retail_commerce: '#2b6cb0',
+  personal_service_repair: '#805ad5',
+  health: '#c53030',
+  finance_insurance: '#168a80',
+  education_religion: '#8a5a00',
+  office_professional: '#4a5568',
+  tourism_culture: '#2f855a',
+  sport_recreation: '#b83280',
+  other: '#737373'
 };
 const cache = {};
-let svMap, densityMap, densityPoiLayer, compareMap, compareState, categoryChart, sourceChart, summaryReady = false;
+const mapLayerControls = new WeakMap();
+let svMap, densityMap, densityPoiLayer, compareLeafletMap, comparePoiLayerGroup, compareLeafletLayer, compareState, categoryChart, sourceChart, summaryReady = false;
 let evidenceState;
 
 async function getData(key) {
@@ -49,48 +63,59 @@ function popupHtml(properties) {
   const name = properties.poi_name || properties.poi_names || properties.name || 'ไม่ระบุชื่อ';
   const main = properties.category_std_th || properties.catmain_th || 'ไม่ระบุหมวดหลัก';
   const sub = properties.category_sub_th || properties.cat_sub_th || properties.category_sub || 'ไม่ระบุหมวดย่อย';
-  const crops = listValue(properties.crop_urls);
-  const cropMarkup = crops.length
+  const source = properties.source || 'sv';
+  const sourceLabel = SOURCE_LABELS[source] || source;
+  const crops = source === 'sv' ? listValue(properties.crop_urls) : [];
+  const cropMarkup = source !== 'sv' ? '' : crops.length
     ? `<div class="popup-crops">${crops.map((url, index) => `<button class="evidence-image-button map-popup-image" type="button" data-image-url="${esc(url)}" data-image-caption="${esc(`ภาพป้าย ${index + 1} · ${name}`)}"><img src="${esc(url)}" alt="ภาพป้าย ${index + 1} ของ ${esc(name)}"></button>`).join('')}</div>`
     : '<div class="popup-empty">ยังไม่ได้เชื่อมรูปป้ายของจุดนี้</div>';
-  return `<div class="popup-title">${esc(name)}</div><div class="popup-meta"><b>หมวดหลัก:</b> ${esc(main)}<br><b>หมวดย่อย:</b> ${esc(sub)}<br><b>แหล่งข้อมูล:</b> ${esc(properties.source || 'Street View')}<br><b>จุดภาพ:</b> ${esc(properties.point_id || properties.poi_id || '-')} ${properties.side ? `· ${esc(properties.side)}` : ''}${properties.poi_count ? `<br><b>จำนวน POI:</b> ${esc(properties.poi_count)}` : ''}</div>${cropMarkup}`;
+  return `<div class="popup-title">${esc(name)}</div><div class="popup-meta"><b>หมวดหลัก:</b> ${esc(main)}<br><b>หมวดย่อย:</b> ${esc(sub)}<br><b>แหล่งข้อมูล:</b> ${esc(sourceLabel)}<br><b>จุดภาพ:</b> ${esc(properties.point_id || properties.poi_id || '-')} ${properties.side ? `· ${esc(properties.side)}` : ''}${properties.poi_count ? `<br><b>จำนวน POI:</b> ${esc(properties.poi_count)}` : ''}</div>${cropMarkup}`;
 }
 
 function categoryKey(feature) {
   const p = feature.properties || feature || {};
   const raw = String(p.category_std || p.cat_std || 'other').split(/[;,|]/)[0].trim().toLowerCase();
+  if (raw === 'health_medical') return 'health';
   return CATEGORY_INFO[raw] ? raw : 'other';
 }
 
-function svgShape(shape) {
-  const paths = {
-    circle: '<circle cx="12" cy="12" r="8"/>',
-    square: '<rect x="4" y="4" width="16" height="16" rx="1"/>',
-    diamond: '<path d="M12 3 L21 12 L12 21 L3 12 Z"/>',
-    cross: '<path d="M9 3 H15 V9 H21 V15 H15 V21 H9 V15 H3 V9 H9 Z"/>',
-    hexagon: '<path d="M8 3 H16 L21 8 V16 L16 21 H8 L3 16 V8 Z"/>',
-    triangle: '<path d="M12 3 L22 21 H2 Z"/>',
-    rounded: '<rect x="3" y="6" width="18" height="12" rx="5"/>',
-    star: '<path d="M12 2.5 L14.9 8.4 L21.4 9.3 L16.7 13.9 L17.8 20.4 L12 17.3 L6.2 20.4 L7.3 13.9 L2.6 9.3 L9.1 8.4 Z"/>',
-    pentagon: '<path d="M12 2.5 L21.5 9.4 L17.9 20.5 H6.1 L2.5 9.4 Z"/>',
-    smallcircle: '<circle cx="12" cy="12" r="5.5"/>'
+function categoryGlyph(key) {
+  const glyphs = {
+    food_beverage: '<path d="M9 7v4m-2-4v2.5a2 2 0 0 0 4 0V7m-2 4v9m7-9a2 2 0 0 0-2 2v1.5h4V13a2 2 0 0 0-2-2Zm0 3.5V20"/>',
+    retail_commerce: '<path d="M8 10h12l1 9H7l1-9Zm3 0V8a3 3 0 0 1 6 0v2"/>',
+    personal_service_repair: '<path d="M17.5 7.5a4 4 0 0 0-5.2 5.2l-5.5 5.5a1.4 1.4 0 0 0 2 2l5.5-5.5a4 4 0 0 0 5.2-5.2l-2.4 2.4-2-2 2.4-2.4Z"/>',
+    health: '<path d="M12 7.5h4v3.5h3.5v4H16v3.5h-4V15h-3.5v-4H12z"/>',
+    finance_insurance: '<path d="m7 11 7-4 7 4H7Zm1 1.5h12M9 12.5v5m3-5v5m4-5v5m3-5v5M7 19h14"/>',
+    education_religion: '<path d="M14 9.5c-2-1.4-4.3-1.4-7-.2v9c2.7-1.2 5-.9 7 .5m0-9.3c2-1.4 4.3-1.4 7-.2v9c-2.7-1.2-5-.9-7 .5m0-9.3v9.3"/>',
+    office_professional: '<rect x="7" y="10" width="14" height="10" rx="1.5"/><path d="M11 10V8h6v2m-10 4h14m-8 0v2h2v-2"/>',
+    tourism_culture: '<path d="M7 19V9l7-3 7 3v10M10 19v-5h8v5M6 19h16"/>',
+    sport_recreation: '<circle cx="14" cy="14" r="7"/><path d="m10 8.3 1.5 3.2-2.2 3.1 3.1 2.2 3.3-1.4 3.6 1.6m-3.7-9.8-.7 3.8 2.7 2.2"/>',
+    other: '<path d="M10 10a4 4 0 1 1 6.6 3c-1.5 1.2-2.6 1.8-2.6 3.5m0 3v.1"/>'
   };
-  return paths[shape] || paths.smallcircle;
+  return glyphs[key] || glyphs.other;
 }
 
-function markerSvg(source, key, size = 24) {
-  const fill = COLORS[source] || COLORS.sv;
-  const shape = CATEGORY_INFO[key]?.shape || CATEGORY_INFO.other.shape;
-  return `<svg class="poi-symbol" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="${size}" height="${size}" aria-hidden="true"><g fill="${fill}" stroke="#ffffff" stroke-width="2" stroke-linejoin="round">${svgShape(shape)}</g></svg>`;
+function markerSvg(source, key, size = 24, useSourceColor = false) {
+  const fill = useSourceColor ? COLORS[source] || COLORS.sv : source === 'sv' ? CATEGORY_COLORS[key] || COLORS.sv : COLORS[source] || COLORS.sv;
+  const height = Math.round(size * 36 / 28);
+  return `<svg class="poi-symbol" data-category="${esc(key)}" data-source="${esc(source)}" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 36" width="${size}" height="${height}" aria-hidden="true"><path d="M14 34.5S3 22.6 3 14.3a11 11 0 1 1 22 0c0 8.3-11 20.2-11 20.2Z" fill="${fill}" stroke="#fff" stroke-width="1.8"/><g fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${categoryGlyph(key)}</g></svg>`;
 }
 
-function categoryLegendHtml() {
-  return Object.entries(CATEGORY_INFO).map(([key, info]) => `<div class="symbol-legend-item">${markerSvg('sv', key, 18)}<span>${esc(info.th)}</span></div>`).join('');
+function categoryLegendHtml(includeOther = false, useSourceColor = false) {
+  return Object.entries(CATEGORY_INFO)
+    .filter(([key]) => includeOther || key !== 'other')
+    .map(([key, info]) => `<label class="symbol-legend-item"><input type="checkbox" data-category-toggle="${key}" checked><span class="symbol-legend-marker">${markerSvg('sv', key, 18, useSourceColor)}</span><span>${esc(info.th)}</span></label>`).join('');
 }
 
-function pointLayer(feature, latlng) {
+function bindCategoryLegend(container, onChange) {
+  container.querySelectorAll('[data-category-toggle]').forEach(toggle => {
+    toggle.addEventListener('change', () => onChange(toggle.dataset.categoryToggle, toggle.checked));
+  });
+}
+
+function pointLayer(feature, latlng, useSourceColor = false) {
   const source = feature.properties.source || 'sv';
-  return L.marker(latlng, { icon: L.divIcon({ className: 'poi-marker', html: markerSvg(source, categoryKey(feature)), iconSize: [24, 24], iconAnchor: [12, 12] }) });
+  return L.marker(latlng, { icon: L.divIcon({ className: 'poi-marker', html: markerSvg(source, categoryKey(feature), 30, useSourceColor), iconSize: [30, 39], iconAnchor: [15, 37] }) });
 }
 
 function addGeoJson(map, geojson, withPopup = true) {
@@ -101,34 +126,60 @@ function addGeoJson(map, geojson, withPopup = true) {
   return layer;
 }
 
+function addMapOverlay(map, layer, label) {
+  layer.addTo(map);
+  mapLayerControls.get(map)?.addOverlay(layer, label);
+  return layer;
+}
+
 function baseMap(target) {
   const map = L.map(target, { zoomControl: false });
   L.control.zoom({ position: 'bottomright' }).addTo(map);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© OpenStreetMap contributors' }).addTo(map);
+  const esriTopoAttribution = 'Tiles &copy; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS and the GIS User Community';
+  const esriImageryAttribution = 'Tiles &copy; Esri, Maxar, Earthstar Geographics and the GIS User Community';
+  const esriDarkAttribution = 'Tiles &copy; Esri, HERE, Garmin, &copy; OpenStreetMap contributors and the GIS user community';
+  const baseLayers = {
+    'ภูมิประเทศ · รายละเอียดพื้นที่': L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19, attribution: esriTopoAttribution }),
+    'ภาพถ่ายดาวเทียม': L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19, attribution: esriImageryAttribution }),
+    'มืด · เน้นจุด': L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19, maxNativeZoom: 16, attribution: esriDarkAttribution }),
+    'OpenStreetMap': L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; OpenStreetMap contributors' })
+  };
+  baseLayers['ภูมิประเทศ · รายละเอียดพื้นที่'].addTo(map);
+  const layerControl = L.control.layers(baseLayers, {}, { position: 'topright', collapsed: true }).addTo(map);
+  mapLayerControls.set(map, layerControl);
   return map;
 }
 
 async function initStreetView() {
   if (svMap) return;
   svMap = baseMap('svMap');
-  document.getElementById('svCategoryLegend').innerHTML = categoryLegendHtml();
+  const categoryLegend = document.getElementById('svCategoryLegend');
+  categoryLegend.innerHTML = categoryLegendHtml();
+  const visibleCategories = new Set(Object.keys(CATEGORY_INFO));
+  bindCategoryLegend(categoryLegend, (key, visible) => {
+    if (visible) visibleCategories.add(key);
+    else visibleCategories.delete(key);
+    draw();
+  });
   const [data, municipality] = await Promise.all([getData('svAll'), getData('municipality')]);
-  L.geoJSON(municipality, { style: { color: '#263f37', weight: 2, fillOpacity: 0 } }).addTo(svMap);
+  addMapOverlay(svMap, L.geoJSON(municipality, { style: { color: '#263f37', weight: 2, fillOpacity: 0 } }), 'ขอบเขตเทศบาล');
+  const poiLayerGroup = L.layerGroup();
+  addMapOverlay(svMap, poiLayerGroup, 'POI · Street View');
   const categories = [...new Set(data.features.map(f => f.properties.category_std_th || f.properties.catmain_th).filter(Boolean))].sort();
   const select = document.getElementById('svCategory');
   categories.forEach(category => select.add(new Option(category, category)));
   let layer;
   function draw() {
-    if (layer) svMap.removeLayer(layer);
+    if (layer) poiLayerGroup.removeLayer(layer);
     const query = document.getElementById('svSearch').value.toLowerCase();
     const category = select.value;
     const filtered = data.features.filter(feature => {
       const p = feature.properties;
       const name = String(p.poi_name || p.poi_names || '').toLowerCase();
       const main = p.category_std_th || p.catmain_th || '';
-      return (!query || name.includes(query)) && (!category || main.includes(category));
+      return visibleCategories.has(categoryKey(feature)) && (!query || name.includes(query)) && (!category || main.includes(category));
     });
-    layer = addGeoJson(svMap, { type: 'FeatureCollection', features: filtered });
+    layer = addGeoJson(poiLayerGroup, { type: 'FeatureCollection', features: filtered });
     document.getElementById('svCount').textContent = `แสดง ${filtered.length.toLocaleString()} จุด จาก ${data.features.length.toLocaleString()} จุด`;
     if (filtered.length) svMap.fitBounds(layer.getBounds(), { padding: [30, 30], maxZoom: 15 });
   }
@@ -141,34 +192,23 @@ async function initDensity() {
   if (densityMap) return;
   densityMap = baseMap('densityMap');
   const kernelBounds = [[18.7567426, 98.9471017], [18.8415526, 99.0293221]];
-  L.imageOverlay(DATA.kernelDensity, kernelBounds, { opacity: 0.82, interactive: false }).addTo(densityMap);
+  addMapOverlay(densityMap, L.imageOverlay(DATA.kernelDensity, kernelBounds, { opacity: 0.82, interactive: false }), 'Kernel Density');
   const [road, municipality, poiData] = await Promise.all([getData('road'), getData('municipality'), getData('svAll')]);
-  L.geoJSON(road, { style: { color: '#4a5650', weight: 1.1, opacity: 0.7 } }).addTo(densityMap);
-  L.geoJSON(municipality, { style: { color: '#263f37', weight: 2.4, fillOpacity: 0 } }).addTo(densityMap);
+  addMapOverlay(densityMap, L.geoJSON(road, { style: { color: '#4a5650', weight: 1.1, opacity: 0.7 } }), 'ถนนนิมมาน');
+  addMapOverlay(densityMap, L.geoJSON(municipality, { style: { color: '#263f37', weight: 2.4, fillOpacity: 0 } }), 'ขอบเขตเทศบาล');
   densityPoiLayer = L.geoJSON(poiData, {
-    pointToLayer: (_, latlng) => L.circleMarker(latlng, { radius: 3.4, color: '#ffffff', weight: 1, fillColor: '#176b4e', fillOpacity: .92, opacity: .95 }),
+    pointToLayer: (_, latlng) => L.circleMarker(latlng, { radius: 3.4, color: '#ffffff', weight: 1, fillColor: COLORS.sv, fillOpacity: .92, opacity: .95 }),
     onEachFeature: (feature, layer) => layer.bindPopup(popupHtml(feature.properties))
-  }).addTo(densityMap);
+  });
+  addMapOverlay(densityMap, densityPoiLayer, 'POI · Street View');
   document.getElementById('densityPoiCount').textContent = `${poiData.features.length.toLocaleString()} จุด`;
-  document.getElementById('densityPoiToggle').addEventListener('change', event => {
+  const densityPoiToggle = document.getElementById('densityPoiToggle');
+  densityPoiLayer.on('add remove', () => { densityPoiToggle.checked = densityMap.hasLayer(densityPoiLayer); });
+  densityPoiToggle.addEventListener('change', event => {
     if (event.target.checked) densityPoiLayer.addTo(densityMap);
     else densityMap.removeLayer(densityPoiLayer);
   });
   densityMap.fitBounds(kernelBounds, { padding: [24, 24] });
-}
-
-function loadGoogleMaps() {
-  const key = window.APP_CONFIG?.googleMapsApiKey;
-  if (!key) return Promise.reject(new Error('ยังไม่ได้ตั้งค่า Google Maps key'));
-  if (window.google?.maps) return Promise.resolve();
-  return new Promise((resolve, reject) => {
-    const script = document.createElement('script');
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(key)}&callback=initGoogleMapsCallback`;
-    script.async = true;
-    script.onerror = reject;
-    window.initGoogleMapsCallback = resolve;
-    document.head.appendChild(script);
-  });
 }
 
 function compareFeatureName(feature) {
@@ -193,34 +233,20 @@ function filteredCompareFeatures() {
     const source = feature.properties?.source || 'sv';
     const name = compareFeatureName(feature).toLowerCase();
     const main = compareFeatureCategory(feature);
-    return enabledSources.has(source) && (!query || name.includes(query)) && (!category || main === category);
+    return enabledSources.has(source) && compareState.visibleCategories.has(categoryKey(feature)) && (!query || name.includes(query)) && (!category || main === category);
   });
 }
 
 function drawCompareMarkers(features, fitBounds = false) {
-  if (!compareMap) return;
-  compareState.markers.forEach(marker => marker.setMap(null));
-  compareState.markers = [];
-  const bounds = new google.maps.LatLngBounds();
-  features.forEach(feature => {
-    const [lon, lat] = feature.geometry.coordinates;
-    const source = feature.properties?.source || 'sv';
-    const marker = new google.maps.Marker({
-      position: { lat, lng: lon },
-      map: compareMap,
-      title: compareFeatureName(feature),
-      icon: {
-        url: `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(markerSvg(source, categoryKey(feature)))}`,
-        scaledSize: new google.maps.Size(24, 24),
-        anchor: new google.maps.Point(12, 12)
-      }
-    });
-    const info = new google.maps.InfoWindow({ content: popupHtml(feature.properties) });
-    marker.addListener('click', () => info.open({ map: compareMap, anchor: marker }));
-    compareState.markers.push(marker);
-    bounds.extend(marker.getPosition());
-  });
-  if (fitBounds && !bounds.isEmpty()) compareMap.fitBounds(bounds, 38);
+  if (!compareLeafletMap) return;
+  if (compareLeafletLayer) comparePoiLayerGroup.removeLayer(compareLeafletLayer);
+  compareLeafletLayer = L.geoJSON({ type: 'FeatureCollection', features }, {
+    pointToLayer: (feature, latlng) => pointLayer(feature, latlng, true),
+    onEachFeature: (feature, layer) => layer.bindPopup(popupHtml(feature.properties))
+  }).addTo(comparePoiLayerGroup);
+  if (fitBounds && compareLeafletLayer.getLayers().length) {
+    compareLeafletMap.fitBounds(compareLeafletLayer.getBounds(), { padding: [38, 38], maxZoom: 17 });
+  }
 }
 
 function refreshCompare() {
@@ -228,42 +254,40 @@ function refreshCompare() {
   const counts = { sv: 0, osm: 0, gg: 0 };
   features.forEach(feature => { counts[feature.properties?.source || 'sv'] += 1; });
   document.getElementById('compareCount').innerHTML = `แสดงทั้งหมด ${features.length.toLocaleString()} จุด<br>Street View: ${counts.sv.toLocaleString()} จุด<br>OpenStreetMap: ${counts.osm.toLocaleString()} จุด<br>Google Places: ${counts.gg.toLocaleString()} จุด`;
-  const list = document.getElementById('compareList');
-  const shown = features.slice(0, 30);
-  list.innerHTML = shown.map(feature => `<div class="poi-row"><b>${esc(compareFeatureName(feature))}</b><span>${esc(compareFeatureCategory(feature))} · ${esc({ sv: 'Street View', osm: 'OpenStreetMap', gg: 'Google Places' }[feature.properties?.source] || '')}</span></div>`).join('') || '<div class="poi-list-note">ไม่พบ POI ตามเงื่อนไขที่เลือก</div>';
-  if (features.length > shown.length) list.insertAdjacentHTML('beforeend', `<div class="poi-list-note">แสดง 30 รายการแรกจาก ${features.length.toLocaleString()} รายการ — จุดทั้งหมดอยู่บนแผนที่</div>`);
   drawCompareMarkers(features);
 }
 
 async function initCompare() {
   if (compareState) return;
-  const [sv, osm, gg, buffer, road, municipality] = await Promise.all([getData('svNimman'), getData('osmNimman'), getData('ggNimman'), getData('buffer'), getData('road'), getData('municipality')]);
-  compareState = { sv, osm, gg, buffer, road, municipality, all: [...sv.features, ...osm.features, ...gg.features], markers: [] };
+  const [sv, osm, gg, buffer, road, municipality, svAll] = await Promise.all([getData('svNimman'), getData('osmNimman'), getData('ggNimman'), getData('buffer'), getData('road'), getData('municipality'), getData('svAll')]);
+  const imagesByPoiId = new Map(svAll.features.map(feature => [String(feature.properties?.poi_id), feature.properties?.crop_urls]));
+  const svWithImages = {
+    ...sv,
+    features: sv.features.map(feature => {
+      const cropUrls = imagesByPoiId.get(String(feature.properties?.poi_id));
+      return cropUrls ? { ...feature, properties: { ...feature.properties, crop_urls: cropUrls } } : feature;
+    })
+  };
+  compareState = { sv: svWithImages, osm, gg, buffer, road, municipality, visibleCategories: new Set(Object.keys(CATEGORY_INFO)), all: [...svWithImages.features, ...osm.features, ...gg.features] };
   const categorySelect = document.getElementById('compareCategory');
-  document.getElementById('compareCategoryLegend').innerHTML = categoryLegendHtml();
+  const categoryLegend = document.getElementById('compareCategoryLegend');
+  categoryLegend.innerHTML = categoryLegendHtml(true, true);
+  bindCategoryLegend(categoryLegend, (key, visible) => {
+    if (visible) compareState.visibleCategories.add(key);
+    else compareState.visibleCategories.delete(key);
+    refreshCompare();
+  });
   [...new Set(compareState.all.map(compareFeatureCategory).filter(Boolean))].sort().forEach(category => categorySelect.add(new Option(category, category)));
   ['compareSearch', 'compareCategory', 'toggleSv', 'toggleOsm', 'toggleGg'].forEach(id => document.getElementById(id).addEventListener(id === 'compareSearch' ? 'input' : 'change', refreshCompare));
   refreshCompare();
-  try {
-    await loadGoogleMaps();
-    document.getElementById('googleKeyMessage')?.remove();
-    const first = compareState.all[0];
-    if (!first) throw new Error('ไม่พบข้อมูลใน buffer');
-    const [lon, lat] = first.geometry.coordinates;
-    compareMap = new google.maps.Map(document.getElementById('compareMap'), { center: { lat, lng: lon }, zoom: 16, mapTypeControl: false, streetViewControl: false });
-    const bufferLayer = new google.maps.Data({ map: compareMap });
-    bufferLayer.addGeoJson(buffer);
-    bufferLayer.setStyle({ fillColor: '#ef8abb', fillOpacity: .22, strokeColor: '#bf427e', strokeWeight: 1.5 });
-    const roadLayer = new google.maps.Data({ map: compareMap });
-    roadLayer.addGeoJson(road);
-    roadLayer.setStyle({ strokeColor: '#343a38', strokeWeight: 3 });
-    const municipalityLayer = new google.maps.Data({ map: compareMap });
-    municipalityLayer.addGeoJson(municipality);
-    municipalityLayer.setStyle({ fillOpacity: 0, strokeColor: '#263f37', strokeWeight: 2.2 });
-    drawCompareMarkers(filteredCompareFeatures(), true);
-  } catch (error) {
-    document.getElementById('googleKeyMessage').innerHTML = '<h2>แสดงข้อมูลสรุปแล้ว</h2><p>เพิ่ม Google Maps JavaScript API key ใน <code>config.js</code> เพื่อแสดงจุด POI ทั้ง 3 แหล่งบนแผนที่เดียวกัน</p>';
-  }
+  compareLeafletMap = baseMap('compareMap');
+  const bufferLayer = addMapOverlay(compareLeafletMap, L.geoJSON(buffer, { style: { color: '#b5765b', weight: 1.5, fillColor: '#e2bd92', fillOpacity: .18 } }), 'ขอบเขต buffer 10 เมตร');
+  addMapOverlay(compareLeafletMap, L.geoJSON(road, { style: { color: '#586660', weight: 2.5, opacity: .85 } }), 'ถนนนิมมาน');
+  addMapOverlay(compareLeafletMap, L.geoJSON(municipality, { style: { color: '#748a7c', weight: 1.5, fillOpacity: 0 } }), 'ขอบเขตเทศบาล');
+  comparePoiLayerGroup = L.layerGroup();
+  addMapOverlay(compareLeafletMap, comparePoiLayerGroup, 'POI · ทั้ง 3 แหล่งข้อมูล');
+  if (bufferLayer.getBounds().isValid()) compareLeafletMap.fitBounds(bufferLayer.getBounds(), { padding: [38, 38], maxZoom: 17 });
+  drawCompareMarkers(filteredCompareFeatures());
 }
 
 async function initSummary() {

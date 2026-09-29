@@ -3,13 +3,15 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>POI Street View · เทศบาลนครเชียงใหม่</title>
+  <title>วิธีการเรียนรู้เชิงลึกสำหรับการปรับปรุงข้อมูลสถานที่สำคัญด้วยข้อมูลภาพ Street View</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath fill='%231b6b4e' d='M32 4C19 4 9 14 9 27c0 17 23 33 23 33s23-16 23-33C55 14 45 4 32 4z'/%3E%3Ccircle cx='32' cy='27' r='9' fill='white'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
   <link rel="stylesheet" href="styles.css?v=20260925-density">
+  <link rel="stylesheet" href="overview.css?v=20260929-hero-dark-sections">
   <link rel="stylesheet" href="compare.css">
-  <link rel="stylesheet" href="symbols.css">
+  <link rel="stylesheet" href="symbols.css?v=20260929-category-pins">
   <link rel="stylesheet" href="evidence.css?v=20260928-density-points">
+  <link rel="stylesheet" href="theme.css?v=20260929-restore-other-pages">
 </head>
 <body>
   <header class="topbar">
@@ -22,17 +24,35 @@
       <button data-page="summary">สรุปข้อมูล</button>
       <!-- <button data-page="matching">ผลการจับคู่</button> -->
       <button data-page="evidence">ภาพป้าย</button>
-      <button data-page="about">เกี่ยวกับงานวิจัย</button>
     </nav>
   </header>
 
   <main>
     <section id="overview" class="page active">
-      <div class="hero-row">
-        <div><p class="eyebrow">ระบบสนับสนุนการปรับปรุงข้อมูล POI</p><h1>จุดสถานที่สำคัญจากภาพ Street View</h1><p class="lead">สำรวจผลการตรวจจับป้าย อ่านข้อความด้วย OCR ตีความด้วย LLM และปรับตำแหน่งจุดเชิงประมาณตามทิศทางภาพ</p></div>
+      <div class="overview-hero">
+        <div class="overview-hero-copy"><p class="eyebrow">งานวิจัยการประยุกต์ใช้ปัญญาประดิษฐ์</p><h1>วิธีการเรียนรู้เชิงลึกสำหรับการปรับปรุงข้อมูลสถานที่สำคัญด้วยข้อมูลภาพ Street View</h1><p class="lead">สำรวจการตรวจจับและปรับปรุงข้อมูล POI จากภาพ Street View พร้อมเปรียบเทียบกับแหล่งข้อมูลแผนที่อื่นในเทศบาลนครเชียงใหม่</p></div>
       </div>
-      <div class="stats" id="overviewStats"><article><b>…</b><span>POI จาก Street View</span></article><article><b>9</b><span>คลาสสถานที่หลัก</span></article><article><b>3</b><span>แหล่งข้อมูลเปรียบเทียบ</span></article></div>
-      <div class="overview-grid"><article class="panel"><h2>เริ่มสำรวจข้อมูล</h2><p>เปิดแผนที่ POI ทั้งเทศบาลเพื่อค้นหาชื่อ กรองหมวดหลัก และตรวจสอบรายละเอียดของป้าย</p><button class="primary jump" data-go="streetview">เปิดแผนที่ Street View</button></article><article class="panel"><h2>พื้นที่เปรียบเทียบ</h2><p>เปรียบเทียบ Street View, OpenStreetMap และ Google Places ภายใน buffer 10 เมตรของถนนนิมมาน</p><button class="secondary jump" data-go="compare">ดูการเปรียบเทียบ</button></article></div>
+      <div class="overview-content">
+      <div class="overview-section-heading"><div><p class="eyebrow">ข้อมูลสำคัญ</p><h2>สรุปชุดข้อมูล</h2></div><span>ภาพรวมการสำรวจ</span></div>
+      <div class="stats overview-stats" id="overviewStats"><article><b>…</b><span>POI จาก Street View</span></article><article><b>9</b><span>หมวดสถานที่หลัก</span></article><article><b>3</b><span>แหล่งข้อมูลเปรียบเทียบ</span></article><article><b>10 ม.</b><span>ระยะ buffer ถนนนิมมาน</span></article></div>
+      <section class="research-data overview-research-data" aria-labelledby="overviewResearchDataTitle">
+        <div class="research-data-heading"><div><p class="eyebrow">ชุดข้อมูลสำหรับการเปรียบเทียบ</p><h2 id="overviewResearchDataTitle">ข้อมูลที่ใช้</h2></div><span>3 แหล่งข้อมูล</span></div>
+        <div class="research-source-grid">
+          <article class="research-source research-source-streetview"><div class="research-source-logo"><img src="data/images/Google_Street_View_icon.svg.webp" alt="" loading="eager"></div><div><h3>Google Street View</h3><p>ภาพถนนสำหรับตรวจจับป้าย อ่านข้อความ และสกัดข้อมูล POI</p></div></article>
+          <article class="research-source research-source-osm"><div class="research-source-logo"><img src="data/images/osm_logo.svg" alt="" loading="eager"></div><div><h3>OpenStreetMap</h3><p>ข้อมูลสถานที่เปิดสำหรับเทียบชื่อ หมวดหมู่ และตำแหน่ง</p></div></article>
+          <article class="research-source research-source-google"><div class="research-source-logo"><img src="data/images/Google_Maps_icon.svg.webp" alt="" loading="eager"></div><div><h3>Google Places</h3><p>ข้อมูลสถานที่สำหรับเปรียบเทียบกับผลจาก Street View</p></div></article>
+        </div>
+      </section>
+      <div class="overview-section-heading overview-shortcuts-heading"><div><p class="eyebrow">เลือกดูข้อมูล</p><h2>ไปยังส่วนสำรวจ</h2></div><span>ทางลัด</span></div>
+      <div class="overview-shortcuts">
+        <button type="button" class="overview-shortcut jump" data-go="streetview"><span class="overview-shortcut-symbol" aria-hidden="true">⌖</span><span class="overview-shortcut-copy"><b>แผนที่ POI</b><small>ค้นหาและตรวจสอบตำแหน่งจาก Street View</small></span><span class="overview-arrow" aria-hidden="true">↗</span></button>
+        <button type="button" class="overview-shortcut jump" data-go="density"><span class="overview-shortcut-symbol density-symbol" aria-hidden="true">◉</span><span class="overview-shortcut-copy"><b>ความหนาแน่น</b><small>ดูบริเวณที่ POI กระจุกตัวบนแผนที่</small></span><span class="overview-arrow" aria-hidden="true">↗</span></button>
+        <button type="button" class="overview-shortcut jump" data-go="evidence"><span class="overview-shortcut-symbol evidence-symbol" aria-hidden="true">▧</span><span class="overview-shortcut-copy"><b>ภาพป้าย</b><small>ตรวจดูภาพป้ายและรายละเอียดของแต่ละจุด</small></span><span class="overview-arrow" aria-hidden="true">↗</span></button>
+        <button type="button" class="overview-shortcut jump" data-go="summary"><span class="overview-shortcut-symbol summary-symbol" aria-hidden="true">▤</span><span class="overview-shortcut-copy"><b>สรุปข้อมูล</b><small>เปรียบเทียบจำนวน POI ตามหมวดและแหล่งข้อมูล</small></span><span class="overview-arrow" aria-hidden="true">↗</span></button>
+      </div>
+      <article class="overview-compare"><div><p class="eyebrow">พื้นที่ศึกษาเฉพาะ</p><h2>เปรียบเทียบข้อมูลย่านนิมมาน</h2><p>สำรวจ POI จาก Street View, OpenStreetMap และ Google Places ภายใน buffer 10 เมตรจากแนวถนนนิมมานเหมินท์</p></div><button class="secondary jump" data-go="compare">ดูการเปรียบเทียบ <span aria-hidden="true">→</span></button></article>
+      <aside class="research-limitation"><b>ข้อจำกัดของข้อมูล</b><ul><li>คุณภาพภาพหรือป้ายที่ถูกบดบังอาจทำให้การตรวจจับคลาดเคลื่อน</li><li>OCR และ LLM อาจอ่านข้อความ ชื่อสถานที่ หรือประเภทผิดพลาด</li><li>ข้อมูลนี้มีเฉพาะจุดที่ผ่านการตรวจจับ ตัดภาพ อ่านข้อความ และจำแนกประเภท จึงไม่ครอบคลุม POI ทั้งหมดในเขตเทศบาลนครเชียงใหม่</li><li>ควรตรวจสอบกับกลุ่มตัวอย่างก่อนนำไปใช้เป็นข้อมูลทางการ</li></ul></aside>
+      </div>
     </section>
 
     <section id="streetview" class="page map-page">
@@ -46,8 +66,8 @@
     </section>
 
     <section id="compare" class="page map-page">
-      <aside class="map-sidebar"><h1>เปรียบเทียบนิมมาน</h1><p>POI ทั้ง 3 แหล่งข้อมูล ภายใน buffer 10 เมตรจากแนวถนนนิมมาน</p><label>ค้นหาชื่อ POI<input id="compareSearch" type="search" placeholder="เช่น ร้านอาหาร โรงแรม"></label><label>หมวดหลัก<select id="compareCategory"><option value="">ทุกหมวดหลัก</option></select></label><div class="source-toggles"><label><input id="toggleSv" type="checkbox" checked> Street View</label><label><input id="toggleOsm" type="checkbox" checked> OpenStreetMap</label><label><input id="toggleGg" type="checkbox" checked> Google Places</label></div><div class="legend"><span><i class="sv"></i>Street View</span><span><i class="osm"></i>OpenStreetMap</span><span><i class="gg"></i>Google Places</span></div><details class="category-legend"><summary>สัญลักษณ์ประเภท POI</summary><div id="compareCategoryLegend"></div></details><div id="compareCount" class="count-box">กำลังอ่านข้อมูล…</div><div id="compareList" class="poi-list">กำลังเตรียมรายชื่อ POI…</div><p class="small">จุดทั้งหมดจะแสดงบน Google Map เมื่อเพิ่ม Google Maps JavaScript API key ใน <code>config.js</code></p></aside>
-      <div id="compareMap" class="map"><div class="map-message" id="googleKeyMessage"><h2>ตั้งค่า Google Map ก่อน</h2><p>เพิ่ม Google Maps JavaScript API key ในไฟล์ <code>config.js</code> แล้วรีเฟรชหน้าเว็บ</p></div></div>
+      <aside class="map-sidebar"><h1>เปรียบเทียบนิมมาน</h1><p>POI ทั้ง 3 แหล่งข้อมูล ภายใน buffer 10 เมตรจากแนวถนนนิมมาน</p><label>ค้นหาชื่อ POI<input id="compareSearch" type="search" placeholder="เช่น ร้านอาหาร โรงแรม"></label><label>หมวดหลัก<select id="compareCategory"><option value="">ทุกหมวดหลัก</option></select></label><div class="source-toggles"><label><input id="toggleSv" type="checkbox" checked> Street View</label><label><input id="toggleOsm" type="checkbox" checked> OpenStreetMap</label><label><input id="toggleGg" type="checkbox" checked> Google Places</label></div><div class="legend"><span><i class="sv"></i>Street View</span><span><i class="osm"></i>OpenStreetMap</span><span><i class="gg"></i>Google Places</span></div><details class="category-legend"><summary>สัญลักษณ์ประเภท POI</summary><div id="compareCategoryLegend"></div></details><div id="compareCount" class="count-box">กำลังอ่านข้อมูล…</div><p class="small"></aside>
+      <div id="compareMap" class="map" aria-label="แผนที่เปรียบเทียบ POI จาก Street View, OpenStreetMap และ Google Places"></div>
     </section>
 
     <section id="summary" class="page content-page"><p class="eyebrow">ผลการเปรียบเทียบใน buffer 10 เมตร</p><h1>สรุปจำนวน POI ตามประเภทและแหล่งข้อมูล</h1><p class="lead">กราฟและตารางสรุปจำนวนจุด POI จาก Street View, OpenStreetMap และ Google Places บริเวณถนนนิมมานเหมินท์</p><div class="summary-grid"><article class="chart-card"><h2>จำนวน POI จำแนกตามหมวดหมู่หลัก</h2><canvas id="categoryChart" aria-label="กราฟจำนวน POI จำแนกตามหมวดหมู่หลัก"></canvas></article><article class="chart-card"><h2>จำนวน POI ตามแหล่งข้อมูล</h2><canvas id="sourceChart" aria-label="กราฟจำนวน POI ตามแหล่งข้อมูล"></canvas></article></div><article class="summary-table-card"><h2>ตารางสรุปจำนวนจุด POI</h2><div class="table-wrap"><table id="summaryTable"><thead><tr><th>หมวดหมู่หลัก</th><th>Street View</th><th>OpenStreetMap</th><th>Google Places</th><th>รวม</th></tr></thead><tbody></tbody></table></div></article></section>
@@ -57,12 +77,11 @@
     <section id="evidence" class="page content-page"><p class="eyebrow">ชุดข้อมูล POI จาก Street View</p><h1>ภาพป้ายและข้อมูล POI</h1><p class="lead">สำรวจผลการตรวจจับป้าย อ่านข้อความด้วย OCR ตีความด้วย LLM และปรับตำแหน่งจุดเชิงประมาณตามทิศทางภาพ</p><div class="dataset-banner"><div class="dataset-file"><span class="dataset-icon">{ }</span><div><b>sv_poi_shifted.geojson</b><span>ชุดข้อมูลจุด POI ที่ใช้แสดงผลบนเว็บ</span></div></div><div class="dataset-stats"><div><b id="evidenceTotal">…</b><span>จุด POI</span></div><div><b id="evidenceImages">…</b><span>ภาพป้าย</span></div></div></div><div class="evidence-controls"><label>ค้นหาชื่อ POI<input id="evidenceSearch" type="search" placeholder="เช่น ร้านอาหาร โรงแรม"></label><label>หมวดหมู่หลัก<select id="evidenceCategory"><option value="">ทุกหมวดหมู่</option></select></label><label>แสดงภาพป้าย<select id="evidenceImageFilter"><option value="all">ทุกจุด</option><option value="with-images">เฉพาะจุดที่มีภาพ</option></select></label></div><p id="evidenceCount" class="evidence-count">กำลังอ่านข้อมูล POI…</p><div id="evidenceList" class="evidence-list"></div><div id="evidencePagination" class="evidence-pagination" hidden><button id="evidencePrev" type="button">← ก่อนหน้า</button><span id="evidencePageLabel"></span><button id="evidenceNext" type="button">ถัดไป →</button></div></section>
     <dialog id="evidenceLightbox" class="evidence-lightbox"><button id="evidenceLightboxClose" type="button" aria-label="ปิดภาพ">×</button><figure><img id="evidenceLightboxImage" alt=""><figcaption id="evidenceLightboxCaption"></figcaption></figure></dialog>
 
-    <section id="about" class="page content-page"><p class="eyebrow">เกี่ยวกับงานวิจัย</p><h1>การปรับปรุงข้อมูลจุดสนใจด้วยภาพ Street View</h1><div class="about-grid"><article><h2>วัตถุประสงค์</h2><p>พัฒนากระบวนการตรวจจับป้ายและสกัดข้อมูล POI จากภาพ Street View เพื่อสนับสนุนการปรับปรุงฐานข้อมูลจุดสนใจเชิงพื้นที่</p></article><article><h2>ข้อมูลที่ใช้</h2><p>ภาพ Street View, ข้อมูล POI จาก OpenStreetMap และข้อมูล Google Places สำหรับใช้เปรียบเทียบในพื้นที่ศึกษา</p></article><article><h2>การตีความผล</h2><p>ตำแหน่ง SV ที่เลื่อนแล้วเป็นตำแหน่งเชิงประมาณตามทิศทางภาพ ไม่ใช่พิกัดสำรวจภาคสนามหรือทางเข้าจริงของสถานประกอบการ</p></article><article><h2>ข้อจำกัด</h2><p>คุณภาพภาพ ป้ายที่ถูกบดบัง OCR และ LLM อาจทำให้ชื่อหรือประเภทคลาดเคลื่อน จึงควรตรวจสอบกับกลุ่มตัวอย่างก่อนใช้เป็นข้อมูลทางการ</p></article></div></section>
   </main>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
   <script src="config.js?v=20260924-mapkey"></script>
-  <script src="app.js?v=20260928-map-images"></script>
+  <script src="app.js?v=20260929-restore-other-pages"></script>
 </body>
 </html>
