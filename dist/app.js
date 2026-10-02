@@ -139,12 +139,12 @@ function baseMap(target) {
   const esriImageryAttribution = 'Tiles &copy; Esri, Maxar, Earthstar Geographics and the GIS User Community';
   const esriDarkAttribution = 'Tiles &copy; Esri, HERE, Garmin, &copy; OpenStreetMap contributors and the GIS user community';
   const baseLayers = {
-    'ภูมิประเทศ · รายละเอียดพื้นที่': L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19, attribution: esriTopoAttribution }),
-    'ภาพถ่ายดาวเทียม': L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19, attribution: esriImageryAttribution }),
-    'มืด · เน้นจุด': L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19, maxNativeZoom: 16, attribution: esriDarkAttribution }),
+    'World Topographic Map': L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19, attribution: esriTopoAttribution }),
+    'World Imagery': L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19, attribution: esriImageryAttribution }),
+    'World Dark Gray Base': L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', { maxZoom: 19, maxNativeZoom: 16, attribution: esriDarkAttribution }),
     'OpenStreetMap': L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '&copy; OpenStreetMap contributors' })
   };
-  baseLayers['ภูมิประเทศ · รายละเอียดพื้นที่'].addTo(map);
+  baseLayers['World Topographic Map'].addTo(map);
   const layerControl = L.control.layers(baseLayers, {}, { position: 'topright', collapsed: true }).addTo(map);
   mapLayerControls.set(map, layerControl);
   return map;
@@ -335,7 +335,8 @@ function evidenceName(feature) {
 
 function evidenceCategory(feature) {
   const p = feature.properties || {};
-  return p.category_std_th || p.catmain_th || 'อื่น ๆ';
+  const main = p.category_std_th || p.catmain_th || '';
+  return main || 'อื่น ๆ';
 }
 
 function openEvidenceLightbox(button) {
@@ -394,7 +395,7 @@ async function initEvidence() {
   if (evidenceState) return;
   const data = await getData('svAll');
   evidenceState = { features: data.features, page: 0 };
-  const categories = [...new Set(data.features.map(evidenceCategory).filter(Boolean))].sort();
+  const categories = [...new Set(data.features.map(feature => categoryKey(feature)).map(key => CATEGORY_INFO[key]?.th || 'อื่น ๆ'))].sort((a, b) => a.localeCompare(b, 'th'));
   const categorySelect = document.getElementById('evidenceCategory');
   categories.forEach(category => categorySelect.add(new Option(category, category)));
   const imageCount = data.features.reduce((total, feature) => total + listValue(feature.properties?.crop_urls).length, 0);
@@ -429,10 +430,13 @@ document.getElementById('evidenceLightboxClose').addEventListener('click', () =>
 document.getElementById('evidenceLightbox').addEventListener('click', event => { if (event.target === event.currentTarget) event.currentTarget.close(); });
 
 (async () => {
+  const overviewStatValue = document.querySelector('#overviewStats article:first-child b');
+  if (!overviewStatValue) return;
+
   try {
     const data = await getData('svAll');
-    document.querySelector('#overviewStats article:first-child b').textContent = data.features.length.toLocaleString();
+    overviewStatValue.textContent = data.features.length.toLocaleString();
   } catch (error) {
-    document.querySelector('#overviewStats article:first-child b').textContent = '—';
+    overviewStatValue.textContent = '—';
   }
 })();
