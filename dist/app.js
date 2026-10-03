@@ -69,7 +69,12 @@ function popupHtml(properties) {
   const cropMarkup = source !== 'sv' ? '' : crops.length
     ? `<div class="popup-crops">${crops.map((url, index) => `<button class="evidence-image-button map-popup-image" type="button" data-image-url="${esc(url)}" data-image-caption="${esc(`ภาพป้าย ${index + 1} · ${name}`)}"><img src="${esc(url)}" alt="ภาพป้าย ${index + 1} ของ ${esc(name)}"></button>`).join('')}</div>`
     : '<div class="popup-empty">ยังไม่ได้เชื่อมรูปป้ายของจุดนี้</div>';
-  return `<div class="popup-title">${esc(name)}</div><div class="popup-meta"><b>หมวดหลัก:</b> ${esc(main)}<br><b>หมวดย่อย:</b> ${esc(sub)}<br><b>แหล่งข้อมูล:</b> ${esc(sourceLabel)}<br><b>จุดภาพ:</b> ${esc(properties.point_id || properties.poi_id || '-')} ${properties.side ? `· ${esc(properties.side)}` : ''}${properties.poi_count ? `<br><b>จำนวน POI:</b> ${esc(properties.poi_count)}` : ''}</div>${cropMarkup}`;
+  const pointId = properties.point_id || properties.poi_id || '-';
+  const side = properties.side ? ` · ${esc(properties.side)}` : '';
+  const pointCount = properties.poi_count
+    ? `<div class="popup-detail-row"><span>จำนวน POI</span><b>${esc(properties.poi_count)}</b></div>`
+    : '';
+  return `<div class="popup-title"><div class="popup-heading"><span class="popup-kicker">POINT OF INTEREST</span><strong>${esc(name)}</strong></div><span class="popup-source-badge popup-source-${esc(source)}">${esc(sourceLabel)}</span></div><div class="popup-meta"><div class="popup-detail-row"><span>หมวดหลัก</span><b>${esc(main)}</b></div><div class="popup-detail-row"><span>หมวดย่อย</span><b>${esc(sub)}</b></div><div class="popup-detail-row"><span>จุดภาพ</span><b>${esc(pointId)}${side}</b></div>${pointCount}</div>${cropMarkup}`;
 }
 
 function categoryKey(feature) {

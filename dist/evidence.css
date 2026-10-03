@@ -9,6 +9,7 @@
   border-radius: 15px;
   background: linear-gradient(110deg, #edf6ef, #f9fcfa);
 }
+.dataset-banner[hidden] { display: none; }
 
 .dataset-file { display: flex; align-items: center; gap: 12px; }
 .dataset-icon { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 10px; background: #176b4e; color: #fff; font-weight: 800; font-size: 13px; }
