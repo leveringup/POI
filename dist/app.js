@@ -403,9 +403,7 @@ async function initEvidence() {
   const categories = [...new Set(data.features.map(feature => categoryKey(feature)).map(key => CATEGORY_INFO[key]?.th || 'อื่น ๆ'))].sort((a, b) => a.localeCompare(b, 'th'));
   const categorySelect = document.getElementById('evidenceCategory');
   categories.forEach(category => categorySelect.add(new Option(category, category)));
-  const imageCount = data.features.reduce((total, feature) => total + listValue(feature.properties?.crop_urls).length, 0);
   document.getElementById('evidenceTotal').textContent = data.features.length.toLocaleString();
-  document.getElementById('evidenceImages').textContent = imageCount.toLocaleString();
   ['evidenceSearch', 'evidenceCategory', 'evidenceImageFilter'].forEach(id => document.getElementById(id).addEventListener(id === 'evidenceSearch' ? 'input' : 'change', () => { evidenceState.page = 0; renderEvidence(); }));
   document.getElementById('evidencePrev').addEventListener('click', () => { evidenceState.page -= 1; renderEvidence(); });
   document.getElementById('evidenceNext').addEventListener('click', () => { evidenceState.page += 1; renderEvidence(); });
@@ -413,6 +411,7 @@ async function initEvidence() {
 }
 
 async function showPage(pageId) {
+  if (!document.querySelector(`.page.active#${pageId}`)) window.scrollTo(0, 0);
   document.querySelectorAll('.page').forEach(page => page.classList.toggle('active', page.id === pageId));
   document.querySelectorAll('#mainNav button').forEach(button => button.classList.toggle('active', button.dataset.page === pageId));
   if (pageId === 'streetview') await initStreetView();

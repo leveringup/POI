@@ -28,7 +28,7 @@
   height: 100%;
   object-fit: cover;
   object-position: center 45%;
-  transform: translate3d(0, var(--overview-parallax-image-y, 0px), 0) scale(1.08);
+  transform: translate3d(var(--overview-parallax-image-x, 0px), calc(var(--overview-parallax-image-y, 0px) + var(--overview-mouse-y, 0px)), 0) scale(1.08) rotateX(var(--overview-mouse-rotate-x, 0deg)) rotateY(var(--overview-mouse-rotate-y, 0deg));
   will-change: transform;
 }
 

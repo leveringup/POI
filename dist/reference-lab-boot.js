@@ -1,0 +1,8 @@
+if(window.Chart){
+ Chart.defaults.color='#7892b2';Chart.defaults.borderColor='#23334a';Chart.defaults.font.family="'Noto Sans Thai',Tahoma,sans-serif";Chart.defaults.font.size=10;
+ Chart.defaults.plugins.legend.labels.usePointStyle=true;Chart.defaults.plugins.legend.labels.boxWidth=6;Chart.defaults.plugins.legend.labels.padding=17;
+ Chart.defaults.animation.duration=matchMedia('(prefers-reduced-motion: reduce)').matches?0:650;
+ Chart.register({id:'researchSourceTotal',afterDraw(chart){if(chart.canvas.id!=='sourceChart')return;const arc=chart.getDatasetMeta(0).data[0];if(!arc)return;const ctx=chart.ctx;const total=chart.data.datasets[0].data.reduce((a,b)=>a+Number(b),0);ctx.save();ctx.textAlign='center';ctx.fillStyle=document.documentElement.dataset.theme==='minimal'?'#3c5d40':'#d0def3';ctx.font="500 35px 'Noto Sans Thai',Tahoma,sans-serif";ctx.fillText(total,arc.x,arc.y+2);ctx.fillStyle=document.documentElement.dataset.theme==='minimal'?'#526b59':'#5a7d9e';ctx.font="9px 'Noto Sans Thai',Tahoma,sans-serif";ctx.fillText('รายการรวมข้ามแหล่ง',arc.x,arc.y+24);ctx.restore();}});
+}
+
+if(window.Chart) Chart.register({id:'poiThemePalette',beforeUpdate(chart){const light=document.documentElement.dataset.theme==='minimal';const text=light?'#40594a':'#7892b2';const grid=light?'#e3eadf':'#23334a';if(chart.options.scales)Object.values(chart.options.scales).forEach(axis=>{if(axis.ticks)axis.ticks.color=text;if(axis.grid)axis.grid.color=grid;});if(chart.options.plugins?.legend?.labels)chart.options.plugins.legend.labels.color=text;if(chart.canvas.id==='sourceChart')chart.data.datasets.forEach(ds=>ds.borderColor=light?'#fff':'#101927');}});

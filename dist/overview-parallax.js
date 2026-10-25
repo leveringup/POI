@@ -45,11 +45,15 @@
   }
 
   function updateActivity() {
-    setActive(!motionPreference.matches && overview.classList.contains('active'));
+    setActive(!motionPreference.matches
+      && !document.body.classList.contains('effects-paused')
+      && overview.classList.contains('active'));
   }
 
   const pageObserver = new MutationObserver(updateActivity);
   pageObserver.observe(overview, { attributes: true, attributeFilter: ['class'] });
+  pageObserver.observe(document.body, { attributes: true, attributeFilter: ['class'] });
   motionPreference.addEventListener('change', updateActivity);
+  document.addEventListener('poi-motion-change', updateActivity);
   updateActivity();
 })();
