@@ -23,6 +23,49 @@ html[data-theme=minimal] :is(input,select){color:#294a34!important}
 html[data-theme=minimal] input::placeholder{color:#607462!important;opacity:1}
 html[data-theme=minimal] :is(button,a,input,select):focus-visible{outline:3px solid #377354;outline-offset:4px}
 .theme-picker select:focus-visible{outline:none}
+
+.brand-icon,
+.lab-brand .logo {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(145deg, #b49aff, #6848bd) !important;
+  color: transparent !important;
+  font-size: 0 !important;
+  transform: none;
+  box-shadow: 0 5px 16px #7857cc42;
+}
+
+.brand-icon::before,
+.lab-brand .logo::before {
+  position: absolute;
+  top: 9px;
+  left: 50%;
+  width: 15px;
+  height: 15px;
+  border-radius: 50% 50% 50% 0;
+  background: #f3ffe7;
+  content: "";
+  transform: translateX(-50%) rotate(-45deg);
+}
+
+.brand-icon::after,
+.lab-brand .logo::after {
+  position: absolute;
+  top: 13px;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #7956c5;
+  content: "";
+  transform: translateX(-50%);
+}
+
+html[data-theme="minimal"] .brand-icon,
+html[data-theme="minimal"] .lab-brand .logo {
+  background: linear-gradient(145deg, #ad9be2, #6b5b9c) !important;
+  box-shadow: 0 3px 10px #59457b26;
+}
 html[data-theme=minimal] .hero{isolation:isolate}
 html[data-theme=minimal] .night-field{display:block!important;opacity:.8}
 html[data-theme=minimal] .hero-copy{z-index:3}

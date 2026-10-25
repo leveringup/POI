@@ -1,5 +1,5 @@
 (() => {
-  const sections = document.querySelectorAll('.street, .process, .closing, .explore-links');
+  const sections = document.querySelectorAll('.intro, .street, .process, .closing, .explore-links, footer');
   if (!sections.length) return;
 
   const sprites = [

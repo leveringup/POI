@@ -4,7 +4,7 @@ const labMeta={
  density:{title:'ความหนาแน่นเชิงพื้นที่',code:'02 / DENSITY ANALYSIS',subtitle:'สำรวจการกระจุกตัวของจุดที่ตรวจพบ ด้วย Kernel Density',scope:'KERNEL DENSITY',badge:'10 m / 100 m'},
  compare:{title:'เปรียบเทียบข้อมูลย่านนิมมาน',code:'03 / SOURCE COMPARISON',subtitle:'สามแหล่งข้อมูล ภายใน buffer 10 เมตรจากแนวถนนนิมมานเหมินท์',scope:'NIMMAN / BUFFER',badge:'3 แหล่งข้อมูล'},
  summary:{title:'ภาพรวมผลการศึกษา',code:'04 / RESEARCH ANALYTICS',subtitle:'จำนวนและหมวดหมู่ POI ในพื้นที่เปรียบเทียบนิมมาน',scope:'COMPARISON SCOPE',badge:'BUFFER 10 m'},
- evidence:{title:'คลังหลักฐานภาพป้าย',code:'05 / EVIDENCE ARCHIVE',subtitle:'ย้อนดูภาพต้นทางของข้อมูลสถานที่ และตรวจสอบผลการตีความ',scope:'STREET VIEW',badge:'IMAGE EVIDENCE'}
+ evidence:{title:'คลังภาพป้าย',code:'05 / EVIDENCE ARCHIVE',subtitle:'ย้อนดูภาพต้นทางของข้อมูลสถานที่ และตรวจสอบผลการตีความ',scope:'STREET VIEW',badge:'IMAGE EVIDENCE'}
 };
 let labRouteVersion=0;
 const filterButton=document.getElementById('filterToggle');
