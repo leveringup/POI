@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="symbols.css?v=20260929-category-pins">
   <link rel="stylesheet" href="evidence.css?v=20261003-popup-refresh">
   <link rel="stylesheet" href="theme.css?v=20261003-popup-refresh">
+  <link rel="stylesheet" href="overview-parallax.css?v=20261024">
 </head>
 <body>
   <header class="topbar">
@@ -30,9 +31,18 @@
   <main>
     <section id="overview" class="page active">
       <div class="overview-hero">
+        <div class="overview-hero-media" aria-hidden="true"><img src="data/images/ภาพรวม.png" alt=""></div>
         <div class="overview-hero-copy"><h1>วิธีการเรียนรู้เชิงลึกสำหรับการปรับปรุงข้อมูลสถานที่สำคัญ<br>ด้วยข้อมูลภาพ Street View</h1><p class="lead">สำรวจการตรวจจับและปรับปรุงข้อมูล POI จากภาพ Street View พร้อมเปรียบเทียบกับแหล่งข้อมูลแผนที่อื่นในเทศบาลนครเชียงใหม่</p></div>
       </div>
       <div class="overview-content">
+      <section class="overview-background" aria-labelledby="overview-background-title">
+        <div class="overview-section-heading"><div><p class="eyebrow">บริบทของการศึกษา</p><h2 id="overview-background-title">ที่มาและความสำคัญ</h2></div></div>
+        <div class="overview-background-grid">
+          <article><span aria-hidden="true">01</span><div><h3>เมืองเปลี่ยนแปลงอยู่เสมอ</h3><p>ร้านค้าและสถานบริการในเชียงใหม่เปลี่ยนแปลงอยู่เสมอ ข้อมูล POI จึงสำคัญต่อการเดินทาง การเข้าถึงบริการ และการวางแผนเมือง</p></div></article>
+          <article><span aria-hidden="true">02</span><div><h3>การสำรวจต้องใช้ทรัพยากร</h3><p>การสำรวจและปักหมุดสถานที่ด้วยมือใช้ทั้งเวลา แรงงาน และงบประมาณ</p></div></article>
+          <article><span aria-hidden="true">03</span><div><h3>ภาพช่วยเตรียมข้อมูลเบื้องต้น</h3><p>ภาพ Street View ร่วมกับ Deep Learning, OCR และ LLM ช่วยตรวจจับ อ่าน และจัดหมวดหมู่ POI เบื้องต้น เพื่อนำไปตรวจสอบและเปรียบเทียบ</p></div></article>
+        </div>
+      </section>
       <div class="overview-section-heading overview-shortcuts-heading"><div><p class="eyebrow">เลือกดูข้อมูล</p><h2>ไปยังส่วนสำรวจ</h2></div><span>ทางลัด</span></div>
       <div class="overview-shortcuts">
         <button type="button" class="overview-shortcut jump" data-go="streetview"><span class="overview-shortcut-symbol" aria-hidden="true">⌖</span><span class="overview-shortcut-copy"><b>แผนที่ POI</b><small>ค้นหาและตรวจสอบตำแหน่งจาก Street View</small></span><span class="overview-arrow" aria-hidden="true">↗</span></button>
@@ -73,5 +83,6 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
   <script src="config.js?v=20260924-mapkey"></script>
   <script src="app.js?v=20261003-popup-refresh"></script>
+  <script src="overview-parallax.js?v=20261024"></script>
 </body>
 </html>

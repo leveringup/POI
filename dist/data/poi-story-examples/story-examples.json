@@ -1,0 +1,279 @@
+{
+  "schema_version": "1.0",
+  "language": "th",
+  "asset_base": "relative to this JSON file",
+  "notes": [
+    "ตัวอย่างคัดเพื่ออธิบายกระบวนการ ไม่ใช่ตัวอย่างสุ่มประเมินความแม่นยำ",
+    "กรอบป้ายเป็นพิกัดบนภาพต้นฉบับก่อนเผื่อขอบ Crop 5%",
+    "LLM วิเคราะห์ข้อความรวมของทุก Crop ในจุดและฝั่งเดียวกัน",
+    "ผล LLM และหมวดหมู่เป็นผลจากโมเดล ยังไม่ยืนยันด้วยการสำรวจภาคสนาม",
+    "ตำแหน่งหลังเลื่อนเป็นค่าประมาณ 10 เมตร ไม่ใช่พิกัดสำรวจจริง",
+    "confidence เป็นคะแนนของโมเดล ไม่ใช่ค่าความถูกต้องที่วัดจากข้อมูลอ้างอิง"
+  ],
+  "examples": [
+    {
+      "id": "poi-16647-left",
+      "point_id": 16647,
+      "side": "left",
+      "title": "ร้านยาเชียงใหม่",
+      "pano_id": "hBjouM7s9vgIXSLEzPk5VQ",
+      "imagery_date": "2024-04",
+      "original_image": {
+        "src": "images/16647_left_original.jpg",
+        "width": 640,
+        "height": 640
+      },
+      "featured_crop_index": 0,
+      "crops": [
+        {
+          "crop_index": 0,
+          "image": "images/gsv_16647_18.802402_98.978298_left_crop0.jpg",
+          "bbox_xyxy_pixels": [
+            176.4,
+            235.5,
+            353.2,
+            283.4
+          ],
+          "bbox_xyxy_normalized": [
+            0.275625,
+            0.367969,
+            0.551875,
+            0.442812
+          ],
+          "detection_confidence": 0.8375,
+          "ocr_text": "ร้านยาเชียงใหม่",
+          "ocr_confidence": 0.9968
+        },
+        {
+          "crop_index": 1,
+          "image": "images/gsv_16647_18.802402_98.978298_left_crop1.jpg",
+          "bbox_xyxy_pixels": [
+            0.0,
+            297.4,
+            39.3,
+            333.4
+          ],
+          "bbox_xyxy_normalized": [
+            0.0,
+            0.464687,
+            0.061406,
+            0.520937
+          ],
+          "detection_confidence": 0.4005,
+          "ocr_text": "",
+          "ocr_confidence": 0.0
+        }
+      ],
+      "llm": {
+        "input_scope": "all OCR text grouped by point_id and side",
+        "input_text": "ร้านยาเชียงใหม่",
+        "pois": [
+          {
+            "poi_name": "ร้านยาเชียงใหม่",
+            "category": "amenity=pharmacy"
+          }
+        ],
+        "error_status": null,
+        "verification_status": "not_field_verified"
+      },
+      "position": {
+        "before": {
+          "lat": 18.802402,
+          "lon": 98.978298
+        },
+        "after": {
+          "lat": 18.802412360205068,
+          "lon": 98.97820376326231
+        },
+        "heading_degrees": 276.585,
+        "offset_meters": 10,
+        "method": "geodesic destination along image heading",
+        "is_approximate": true
+      },
+      "provenance": {
+        "summary_csv": "image_download_summary_7.csv",
+        "detection_csv": "raw_detections_m7_2.csv",
+        "crop_manifest_csv": "crop_manifest_m7 (1).csv",
+        "ocr_csv": "ocr_results_m7_2 (2).csv",
+        "llm_csv": "poi_left_results_v2 (1).csv",
+        "shift_csv": "poi_shifted_grouped (3).csv"
+      }
+    },
+    {
+      "id": "poi-21038-left",
+      "point_id": 21038,
+      "side": "left",
+      "title": "ร้านต้นมะขาม",
+      "pano_id": "MTHfKx-pN1ZPvI7OcAud4Q",
+      "imagery_date": "2024-04",
+      "original_image": {
+        "src": "images/21038_left_original.jpg",
+        "width": 640,
+        "height": 640
+      },
+      "featured_crop_index": 1,
+      "crops": [
+        {
+          "crop_index": 0,
+          "image": "images/gsv_21038_18.836862_98.978482_left_crop0.jpg",
+          "bbox_xyxy_pixels": [
+            259.8,
+            202.9,
+            533.6,
+            297.6
+          ],
+          "bbox_xyxy_normalized": [
+            0.405938,
+            0.317031,
+            0.83375,
+            0.465
+          ],
+          "detection_confidence": 0.7044,
+          "ocr_text": "ด้วยกัน. มนสีด้หมด! ร้านต้นมะขาม",
+          "ocr_confidence": 0.6287
+        },
+        {
+          "crop_index": 1,
+          "image": "images/gsv_21038_18.836862_98.978482_left_crop1.jpg",
+          "bbox_xyxy_pixels": [
+            306.1,
+            255.8,
+            495.5,
+            294.1
+          ],
+          "bbox_xyxy_normalized": [
+            0.478281,
+            0.399688,
+            0.774219,
+            0.459531
+          ],
+          "detection_confidence": 0.5785,
+          "ocr_text": "ร้านต้นมะขาม",
+          "ocr_confidence": 0.9954
+        }
+      ],
+      "llm": {
+        "input_scope": "all OCR text grouped by point_id and side",
+        "input_text": "ด้วยกัน. มนสีด้หมด! ร้านต้นมะขาม, ร้านต้นมะขาม",
+        "pois": [
+          {
+            "poi_name": "ร้านต้นมะขาม",
+            "category": "amenity=restaurant"
+          }
+        ],
+        "error_status": null,
+        "verification_status": "not_field_verified"
+      },
+      "position": {
+        "before": {
+          "lat": 18.836862,
+          "lon": 98.978482
+        },
+        "after": {
+          "lat": 18.836883217200523,
+          "lon": 98.97838977187892
+        },
+        "heading_degrees": 283.583,
+        "offset_meters": 10,
+        "method": "geodesic destination along image heading",
+        "is_approximate": true
+      },
+      "provenance": {
+        "summary_csv": "image_download_summary_7.csv",
+        "detection_csv": "raw_detections_m7_2.csv",
+        "crop_manifest_csv": "crop_manifest_m7 (1).csv",
+        "ocr_csv": "ocr_results_m7_2 (2).csv",
+        "llm_csv": "poi_left_results_v2 (1).csv",
+        "shift_csv": "poi_shifted_grouped (3).csv"
+      }
+    },
+    {
+      "id": "poi-4193-left",
+      "point_id": 4193,
+      "side": "left",
+      "title": "Tops",
+      "pano_id": "YgUFwKd7PXWHnhbVQvc5Jw",
+      "imagery_date": "2024-04",
+      "original_image": {
+        "src": "images/4193_left_original.jpg",
+        "width": 640,
+        "height": 640
+      },
+      "featured_crop_index": 0,
+      "crops": [
+        {
+          "crop_index": 0,
+          "image": "images/gsv_4193_18.801813_98.984145_left_crop0.jpg",
+          "bbox_xyxy_pixels": [
+            238.0,
+            120.4,
+            513.2,
+            219.6
+          ],
+          "bbox_xyxy_normalized": [
+            0.371875,
+            0.188125,
+            0.801875,
+            0.343125
+          ],
+          "detection_confidence": 0.628,
+          "ocr_text": "tops",
+          "ocr_confidence": 0.9924
+        },
+        {
+          "crop_index": 1,
+          "image": "images/gsv_4193_18.801813_98.984145_left_crop1.jpg",
+          "bbox_xyxy_pixels": [
+            0.0,
+            225.9,
+            27.8,
+            276.7
+          ],
+          "bbox_xyxy_normalized": [
+            0.0,
+            0.352969,
+            0.043438,
+            0.432344
+          ],
+          "detection_confidence": 0.343,
+          "ocr_text": "",
+          "ocr_confidence": 0.0
+        }
+      ],
+      "llm": {
+        "input_scope": "all OCR text grouped by point_id and side",
+        "input_text": "tops",
+        "pois": [
+          {
+            "poi_name": "Tops",
+            "category": "shop=supermarket"
+          }
+        ],
+        "error_status": null,
+        "verification_status": "not_field_verified"
+      },
+      "position": {
+        "before": {
+          "lat": 18.801813,
+          "lon": 98.984145
+        },
+        "after": {
+          "lat": 18.801902972958313,
+          "lon": 98.98413642711999
+        },
+        "heading_degrees": 354.815,
+        "offset_meters": 10,
+        "method": "geodesic destination along image heading",
+        "is_approximate": true
+      },
+      "provenance": {
+        "summary_csv": "image_download_summary_10.csv",
+        "detection_csv": "raw_detections_m7_2.csv",
+        "crop_manifest_csv": "crop_manifest_m7 (1).csv",
+        "ocr_csv": "ocr_results_m7_2 (2).csv",
+        "llm_csv": "poi_left_results_v2 (1).csv",
+        "shift_csv": "poi_shifted_grouped (3).csv"
+      }
+    }
+  ]
+}
