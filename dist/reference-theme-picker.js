@@ -1,7 +1,7 @@
 (()=>{
  const root=document.documentElement;
  const controls=document.createElement('div');controls.className='theme-picker';
- controls.innerHTML='<label><span class="theme-symbol" aria-hidden="true">◐</span><span class="visually-hidden">ธีมเว็บไซต์</span><select aria-label="ธีมเว็บไซต์"><option value="night">Night Lab</option><option value="minimal">Minimal</option></select></label>';
+ controls.innerHTML='<label><span class="theme-symbol" aria-hidden="true">◐</span><span class="visually-hidden">ธีมเว็บไซต์</span><select aria-label="ธีมเว็บไซต์"><option value="night">โหมดมืด</option><option value="minimal">โหมดสว่าง</option></select></label>';
  const target=document.querySelector('.header-meta')||document.querySelector('header nav');
  if(target)target.prepend(controls);
  const select=controls.querySelector('select');
