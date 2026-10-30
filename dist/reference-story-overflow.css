@@ -168,6 +168,14 @@ html[data-theme="minimal"] .hero h1 em.shiny-text {
 }
 
 @media (max-width: 760px) {
+  .dark-mode .problem h3 {
+    color: #e9edf7;
+  }
+
+  .problem::after {
+    display: none;
+  }
+
   .steps .step-figure {
     min-height: 220px;
     margin: 14px 0 18px;
